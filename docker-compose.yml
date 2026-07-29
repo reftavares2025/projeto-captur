@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./services/backend
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - DATABASE_URL="file:./dev.db"
+      - EVOLUTION_API_URL="http://evolution-api:8080"
+      - EVOLUTION_API_KEY="SUA_CHAVE_API"
+      - EVOLUTION_INSTANCE="CapturAgenciaDeViagens"
+    volumes:
+      - ./services/backend/uploads:/app/uploads
+    restart: always
+
+  web-admin:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./apps/web-admin:/usr/share/nginx/html
+    restart: always
+
+  mobile-web:
+    image: nginx:alpine
+    ports:
+      - "8081:80"
+    volumes:
+      - ./apps/mobile:/usr/share/nginx/html
+    restart: always

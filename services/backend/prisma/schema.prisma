@@ -1,0 +1,98 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  nome      String
+  whatsapp  String   @unique
+  cpf       String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  trips Trip[]
+
+  @@map("users")
+}
+
+model Trip {
+  id           String   @id @default(uuid())
+  clienteId    String   @map("cliente_id")
+  destino      String
+  dataEmbarque DateTime @map("data_embarque")
+  dataRetorno  DateTime @map("data_retorno")
+  status       String   @default("EM_ANDAMENTO") // EM_ANDAMENTO, CONCLUIDA, CANCELADA
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  cliente          User             @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  responsibilities Responsibility[]
+  payments         Payment[]
+
+  @@map("trips")
+}
+
+model Responsibility {
+  id         String    @id @default(uuid())
+  tripId     String    @map("trip_id")
+  titulo     String
+  tipo       String    // AGENCIA, CLIENTE
+  status     String    @default("PENDENTE") // PENDENTE, ENVIADO, APROVADO
+  dataLimite DateTime? @map("data_limite")
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  trip      Trip       @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  documents Document[]
+
+  @@map("responsibilities")
+}
+
+model DestinationGuide {
+  id        String   @id @default(uuid())
+  destino   String
+  categoria String   // RESTAURANTE, BALADA, PONTO_TURISTICO, COMPRAS, OUTRO
+  nomeLocal String   @map("nome_local")
+  descricao String
+  fotoUrl   String?  @map("foto_url")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("destination_guides")
+}
+
+model Document {
+  id               String   @id @default(uuid())
+  responsibilityId String   @map("responsibility_id")
+  fileUrl          String   @map("file_url")
+  uploadedAt       DateTime @default(now()) @map("uploaded_at")
+  status           String   @default("EM_ANALISE") // EM_ANALISE, APROVADO, REJEITADO
+  notes            String?
+
+  responsibility Responsibility @relation(fields: [responsibilityId], references: [id], onDelete: Cascade)
+
+  @@map("documents")
+}
+
+model Payment {
+  id         String   @id @default(uuid())
+  tripId     String   @map("trip_id")
+  title      String
+  amount     Float
+  dueDate    DateTime @map("due_date")
+  status     String   @default("PENDENTE") // PENDENTE, PAGO, ATRASADO
+  pixQrCode  String?  @map("pix_qr_code")
+  invoiceUrl String?  @map("invoice_url")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+

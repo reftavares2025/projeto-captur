@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: captur-backend
+    env: node
+    buildCommand: cd services/backend && npm install && npx prisma generate && npm run build
+    startCommand: cd services/backend && npx prisma migrate deploy && npm start
+    envVars:
+      - key: PORT
+        value: 3001
+      - key: JWT_SECRET
+        value: captur_jwt_super_secret_key_2026
+      - key: GROQ_API_KEY
+        value: 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
+      - key: GROQ_MODEL
+        value: llama-3.1-8b-instant
+      - key: DATABASE_URL
+        fromDatabase:
+          name: captur-db
+          property: connectionString
+
+databases:
+  - name: captur-db
+    plan: free
