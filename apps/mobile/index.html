@@ -71,12 +71,132 @@
         <h2>Cancún, México 🇲🇽</h2>
       </div>
 
-      <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('timeline')">Timeline & Status</button>
-        <button class="tab-btn" onclick="switchTab('guia')">Guia de Cancún</button>
+      <!-- BANNER DE INSTALAÇÃO NO CELULAR (ATALHO PWA) -->
+      <div id="pwa-install-banner" style="background: linear-gradient(135deg, #B80D28, #960A1F); color: white; padding: 12px 14px; border-radius: 16px; margin: 12px 16px 0 16px; display: flex; items-center; justify-content: space-between; box-shadow: 0 4px 12px rgba(184,13,40,0.25);">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 22px;">📲</span>
+          <div>
+            <p style="font-weight: 800; font-size: 12px;">Instale o App Captur no Celular!</p>
+            <p style="font-size: 10px; opacity: 0.9;">Receba avisos VIP de novas viagens no seu celular.</p>
+          </div>
+        </div>
+        <button id="btn-install" onclick="requestPushPermission()" style="background: white; color: #B80D28; font-weight: 800; padding: 6px 12px; border-radius: 10px; font-size: 11px; border: none; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
+          Adicionar
+        </button>
       </div>
 
-      <div id="tab-timeline" class="content">
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('novas')">🔥 Novas Viagens</button>
+        <button class="tab-btn" onclick="switchTab('cadastro')">📝 Cadastro</button>
+        <button class="tab-btn" onclick="switchTab('timeline')">Timeline</button>
+        <button class="tab-btn" onclick="switchTab('guia')">Guia</button>
+      </div>
+
+      <!-- ABA: NOVAS VIAGENS (CATÁLOGO DA PAULA) -->
+      <div id="tab-novas" class="content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin: 10px 0 14px 0;">
+          <h2 style="font-size: 14px; font-weight: 800; color: var(--text-dark);">🌴 Destinos & Pacotes Exclusivos</h2>
+          <span style="font-size: 10px; background: #FFF5F6; color: var(--captur-red); font-weight: 800; padding: 4px 8px; border-radius: 12px; border: 1px solid #FEE2E2;">Atualizado pela Paula</span>
+        </div>
+
+        <div id="container-viagens-cards">
+          <!-- Card de Viagem Publicada -->
+          <div class="guide-card">
+            <div class="guide-img" style="background: linear-gradient(135deg, #0F172A, #1E293B); color: white; flex-direction: column;">
+              <span style="font-size: 32px;">🇲🇽</span>
+              <span style="font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">Cancún, México</span>
+            </div>
+            <div class="guide-info">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="guide-name">Pacote Resort All Inclusive</div>
+                <span class="badge aprovado">PACOTE VIP</span>
+              </div>
+              <div class="guide-desc">7 Dias em Cancún com voos diretos, translado privativo e hospedagem no Hotel Riu Palace.</div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; border-top: 1px solid #F1F5F9; padding-top: 8px;">
+                <div>
+                  <span style="font-size: 10px; color: var(--text-muted); display: block;">Valor por Passageiro</span>
+                  <strong style="font-size: 15px; color: var(--captur-red);">R$ 4.850,00</strong>
+                </div>
+                <button onclick="abrirChatMonica('Cancún Resort All Inclusive')" style="background: #0F172A; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; cursor: pointer;">🤖 Falar com Mônica IA</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="guide-card">
+            <div class="guide-img" style="background: linear-gradient(135deg, #0F172A, #1E293B); color: white; flex-direction: column;">
+              <span style="font-size: 32px;">🇺🇸</span>
+              <span style="font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">Orlando, Flórida</span>
+            </div>
+            <div class="guide-info">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="guide-name">Magia Disney & Universal 2026</div>
+                <span class="badge aprovado">LANÇAMENTO</span>
+              </div>
+              <div class="guide-desc">10 Dias com ingressos para 4 Parques Disney + 2 Parques Universal + Casa em Condomínio Fechado.</div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; border-top: 1px solid #F1F5F9; padding-top: 8px;">
+                <div>
+                  <span style="font-size: 10px; color: var(--text-muted); display: block;">Valor por Passageiro</span>
+                  <strong style="font-size: 15px; color: var(--captur-red);">R$ 6.900,00</strong>
+                </div>
+                <button onclick="abrirChatMonica('Orlando Disney e Universal')" style="background: #0F172A; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; cursor: pointer;">🤖 Falar com Mônica IA</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ABA CADASTRO ONBOARDING PASSAGEIRO -->
+      <div id="tab-cadastro" class="content" style="display: none;">
+        <div class="upload-box" style="margin-top: 10px;">
+          <h3 style="font-size: 14px; font-weight: 800; color: #0F172A; margin-bottom: 4px;">📝 Formuário de Cadastro do Passageiro</h3>
+          <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 14px;">Preencha seus dados oficiais para validação e emissão de vouchers.</p>
+          
+          <form id="onboardingForm" onsubmit="submitOnboarding(event)">
+            <div style="margin-bottom: 10px;">
+              <label style="font-size: 10px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px; text-transform: uppercase;">Nome Completo</label>
+              <input type="text" id="onb-nome" required placeholder="Ex: Régis Tavares" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 12px;" />
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+              <div>
+                <label style="font-size: 10px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px; text-transform: uppercase;">WhatsApp</label>
+                <input type="tel" id="onb-phone" required placeholder="(15) 99888-7766" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 12px;" />
+              </div>
+              <div>
+                <label style="font-size: 10px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px; text-transform: uppercase;">E-mail</label>
+                <input type="email" id="onb-email" required placeholder="regis@rbr.com.br" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 12px;" />
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+              <div>
+                <label style="font-size: 10px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px; text-transform: uppercase;">CPF</label>
+                <input type="text" id="onb-cpf" required placeholder="123.456.789-00" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 12px;" />
+              </div>
+              <div>
+                <label style="font-size: 10px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px; text-transform: uppercase;">Passaporte</label>
+                <input type="text" id="onb-passaporte" required placeholder="BR887766" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 12px;" />
+              </div>
+            </div>
+
+            <div style="margin-bottom: 10px;">
+              <label style="font-size: 10px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px; text-transform: uppercase;">Foto do Passaporte / RG</label>
+              <input type="file" id="onb-file" required style="width: 100%; font-size: 11px;" />
+            </div>
+
+            <div style="display: flex; gap: 8px; align-items: flex-start; background: #F8FAFC; padding: 10px; border-radius: 10px; border: 1px solid #E2E8F0; margin-bottom: 12px;">
+              <input type="checkbox" id="onb-lgpd" required style="margin-top: 2px;" />
+              <label for="onb-lgpd" style="font-size: 10px; color: #64748B; line-height: 1.3;">
+                Autorizo a <strong>Captur Agência de Viagens</strong> a armazenar e processar meus dados pessoais e de identificação (LGPD).
+              </label>
+            </div>
+
+            <button type="submit" class="upload-btn" style="background: var(--captur-red);">Enviar Cadastro para Análise</button>
+          </form>
+        </div>
+      </div>
+
+      <div id="tab-timeline" class="content" style="display: none;">
         <div class="progress-card">
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <span style="font-size: 12px; font-weight: 600;">Organização da Viagem</span>
@@ -185,22 +305,257 @@
       </div>
     </div>
 
+    <!-- MODAL DE CHAT INTERATIVO COM A MÔNICA IA -->
+    <div id="chat-monica-modal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); z-index: 1000; align-items: flex-end; justify-content: center; padding: 0;">
+      <div style="background: white; width: 100%; max-width: 380px; height: 580px; border-top-left-radius: 28px; border-top-right-radius: 28px; display: flex; flex-direction: column; box-shadow: 0 -10px 40px rgba(0,0,0,0.3); overflow: hidden; position: relative; border: 1px solid #E2E8F0;">
+        
+        <!-- Cabeçalho do Chat -->
+        <div style="background: linear-gradient(135deg, #B80D28, #87071B); padding: 14px 16px; color: white; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 10px rgba(184,13,40,0.2);">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="position: relative;">
+              <div style="width: 38px; height: 38px; border-radius: 50%; background: white; color: #B80D28; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
+                🤖
+              </div>
+              <span style="width: 10px; height: 10px; background: #34D399; border: 2px solid white; border-radius: 50%; position: absolute; bottom: 0; right: 0;"></span>
+            </div>
+            <div>
+              <h3 style="font-weight: 800; font-size: 14px; margin: 0; line-height: 1.2;">Mônica IA</h3>
+              <p style="font-size: 10px; opacity: 0.9; margin: 0;">Concierge VIP Captur • Online</p>
+            </div>
+          </div>
+          <button onclick="fecharChatMonica()" style="background: transparent; border: none; color: white; font-size: 20px; font-weight: 800; cursor: pointer; padding: 4px 8px;">✕</button>
+        </div>
+
+        <!-- Área de Mensagens (Scrollable) -->
+        <div id="chat-messages-container" style="flex: 1; padding: 14px; overflow-y: auto; background: #F8FAFC; font-size: 13px; display: flex; flex-direction: column; gap: 10px;">
+        </div>
+
+        <!-- Indicador de Digitação -->
+        <div id="chat-typing-indicator" style="display: none; padding: 6px 14px; font-size: 11px; color: #64748B; font-style: italic; background: #F8FAFC;">
+          <span>🤖 Mônica está digitando...</span>
+        </div>
+
+        <!-- Caixa de Entrada de Texto -->
+        <form id="chat-monica-form" onsubmit="enviarMensagemMonica(event)" style="padding: 10px 12px; background: white; border-top: 1px solid #E2E8F0; display: flex; align-items: center; gap: 8px;">
+          <input 
+            type="text" 
+            id="chat-user-input" 
+            placeholder="Digite sua dúvida para a Mônica..." 
+            style="flex: 1; background: #F1F5F9; border: none; border-radius: 12px; padding: 10px 14px; font-size: 12px; outline: none; font-weight: 600;"
+            required
+            autocomplete="off"
+          />
+          <button 
+            type="submit" 
+            style="background: #B80D28; color: white; border: none; padding: 10px 14px; border-radius: 12px; font-weight: 800; font-size: 12px; cursor: pointer; box-shadow: 0 2px 8px rgba(184,13,40,0.3);"
+          >
+            Enviar
+          </button>
+        </form>
+      </div>
+    </div>
+
     <script>
+      // HISTÓRICO DE MENSAGENS EM MEMÓRIA DAS SESSÕES
+      let historicoChatMonica = [];
+      let contextoViagemAtual = '';
+
+      function abrirChatMonica(nomePacote) {
+        contextoViagemAtual = nomePacote || 'Pacotes de Viagem Captur';
+        document.getElementById('chat-monica-modal').style.display = 'flex';
+        
+        const container = document.getElementById('chat-messages-container');
+        
+        if (historicoChatMonica.length === 0) {
+          const saudacao = `Olá! Que excelente escolha o pacote **${contextoViagemAtual}**! 🌴 Eu sou a Mônica, sua concierge VIP da Captur. Posso tirar todas as suas dúvidas sobre prazos de passaporte, parcelamento no PIX ou facilidades de embarque. O que gostaria de saber primeiro?`;
+          
+          adicionarBolhaMensagem('monica', saudacao);
+          historicoChatMonica.push({ role: 'assistant', content: saudacao });
+        }
+      }
+
+      function fecharChatMonica() {
+        document.getElementById('chat-monica-modal').style.display = 'none';
+      }
+
+      function adicionarBolhaMensagem(remetente, texto) {
+        const container = document.getElementById('chat-messages-container');
+        const divWrapper = document.createElement('div');
+        
+        if (remetente === 'user') {
+          divWrapper.style.display = 'flex';
+          divWrapper.style.justifyContent = 'flex-end';
+          divWrapper.style.marginBottom = '6px';
+          divWrapper.innerHTML = `
+            <div style="background: #B80D28; color: white; padding: 10px 14px; border-radius: 16px; border-top-right-radius: 2px; max-width: 80%; font-size: 12px; line-height: 1.4; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+              ${texto}
+            </div>
+          `;
+        } else {
+          divWrapper.style.display = 'flex';
+          divWrapper.style.justifyContent = 'flex-start';
+          divWrapper.style.marginBottom = '6px';
+          divWrapper.innerHTML = `
+            <div style="background: white; border: 1px solid #E2E8F0; color: #0F172A; padding: 10px 14px; border-radius: 16px; border-top-left-radius: 2px; max-width: 85%; font-size: 12px; line-height: 1.4; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
+              ${texto}
+            </div>
+          `;
+        }
+        
+        container.appendChild(divWrapper);
+        container.scrollTop = container.scrollHeight;
+      }
+
+      function gerarRespostaMonicaVendas(mensagem, contexto) {
+        if (!mensagem) return `Olá! Sou a Mônica IA da Captur. Como posso te ajudar a escolher sua viagem hoje?`;
+        
+        // Normalização sem acentos para garantir o match exato de qualquer texto digitado
+        const msg = mensagem.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+        // 1. Passo a Passo de Como Comprar / Reservar uma Nova Viagem
+        if (/como|passo|comprar|reservar|fechar|contratar|passo a passo|como faco|procedimento|etapas/.test(msg)) {
+          return `🛒 **Passo a Passo Fácil para Garantir sua Nova Viagem na Captur:**\n\n1️⃣ **Escolha o Destino**: Veja nossas opções (Cancún ou Orlando) ou me diga para onde quer ir.\n2️⃣ **Preencha o Cadastro**: Vá na aba **"📝 Cadastro"** do aplicativo e preencha seus dados de passageiro com foto do RG/Passaporte.\n3️⃣ **Análise & Validação**: A Paula recebe seus dados na Fila de Aprovação da agência e valida sua vaga.\n4️⃣ **Pagamento & Voucher**: Escolha pagar via PIX ou Cartão (em até 10x sem juros). O contrato e voucher oficial chegam direto no seu WhatsApp e na aba **Timeline**!\n\nQuer que eu te ajude a iniciar seu cadastro agora mesmo?`;
+        }
+
+        // 2. Opções e Catálogo de Viagens Disponíveis
+        if (/opcao|opcoes|quais|destino|destinos|pacote|pacotes|viagem|viagens|tem|disponivel|catalogo|lista|lugares|onde/.test(msg)) {
+          return `✈️ **Opções de Viagens Exclusivas Abertas pela Paula este Mês:**\n\n🌴 **1. Cancún Resort All Inclusive (México 🇲🇽)**\n• **Duração**: 7 Dias / 6 Noites no Hotel Riu Palace\n• **Incluso**: Voos diretos, resort all inclusive + translado VIP\n• **Investimento**: R$ 4.850,00 por passageiro (10x sem juros no cartão ou PIX parcelado)\n\n🏰 **2. Orlando Magia Disney & Universal 2026 (EUA 🇺🇸)**\n• **Duração**: 10 Dias em casa de condomínio fechado\n• **Incluso**: Ingressos para 4 Parques Disney + 2 Parques Universal\n• **Investimento**: R$ 6.900,00 por passageiro\n\nQual destas opções você deseja garantir?`;
+        }
+
+        // 3. Saudações
+        if (/ola|oi|tudo bem|bom dia|boa tarde|boa noite|tudo bom|falar|ajuda/.test(msg)) {
+          return `Tudo ótimo! É um prazer falar com você! 😃 Sou a Mônica, Agente de Vendas VIP da Captur. Estou aqui para te mostrar as melhores opções de viagens e te ajudar no passo a passo para garantir seu embarque! O que gostaria de saber primeiro?`;
+        }
+
+        // 4. Preços e Formas de Pagamento
+        if (/preco|precos|valor|valores|quanto|custo|custos|parcela|parcelas|pagamento|pix|cartao|desconto/.test(msg)) {
+          return `💳 **Facilidades de Pagamento na Captur:**\n• **Cancún All Inclusive**: R$ 4.850,00\n• **Orlando Disney**: R$ 6.900,00\n\nPagamento facilitado em até 10x sem juros no cartão ou no PIX parcelado direto com a agência! Gostaria que eu simulasse uma reserva para você?`;
+        }
+
+        // 5. Passaporte e Documentos
+        if (/passaporte|visto|documento|documentos|rg|cpf|embarque|vacina/.test(msg)) {
+          return `🛂 **Documentação Necessária:**\nPara viagens internacionais (Cancún / Orlando), você precisará do seu Passaporte válido ou RG.\n\nVocê pode enviar a foto do documento agora mesmo na aba **"📝 Cadastro"** do app. Vamos fazer seu cadastro de passageiro?`;
+        }
+
+        // 6. Detalhes de Orlando / Disney
+        if (/orlando|disney|universal|parque|parques|eua|florida/.test(msg)) {
+          return `🏰 **Pacote Orlando Magia Disney & Universal 2026**\n10 Dias com casa em condomínio e ingressos para 6 parques principais! Por apenas R$ 6.900,00 por passageiro. Quantas pessoas vão viajar com você?`;
+        }
+
+        // 7. Detalhes de Cancún
+        if (/cancun|praia|resort|caribe|mexico/.test(msg)) {
+          return `🌴 **Pacote Cancún Resort All Inclusive**\n7 Dias de pura mordomia de frente para o mar do Caribe no Hotel Riu Palace por R$ 4.850,00 por passageiro com voos e translado. Posso separar suas vagas?`;
+        }
+
+        const respostasGenericas = [
+          `Entendido! Além dos pacotes de **Cancún** e **Orlando**, temos facilidades exclusivas de pagamento no PIX e suporte 24h durante todo o embarque. Quer conferir o passo a passo para comprar ou tirar dúvidas de documentação?`,
+          `Perfeito! Posso te apresentar nossas **opções de viagens** ou te guiar no **passo a passo para comprar** sua viagem agora. O que prefere ver?`,
+          `Ótima pergunta! A Paula reservou voos com horários muito confortáveis e resorts bem avaliados. Deseja conferir o passo a passo de como garantir sua reserva hoje?`
+        ];
+
+        const respostaEscolhida = respostasGenericas[indiceRespostaGenerica % respostasGenericas.length];
+        indiceRespostaGenerica++;
+        return respostaEscolhida;
+      }
+
+      async function enviarMensagemMonica(e) {
+        e.preventDefault();
+        const input = document.getElementById('chat-user-input');
+        const mensagemUsuario = input.value.trim();
+        
+        if (!mensagemUsuario) return;
+        
+        adicionarBolhaMensagem('user', mensagemUsuario);
+        historicoChatMonica.push({ role: 'user', content: mensagemUsuario });
+        input.value = '';
+
+        const typingIndicator = document.getElementById('chat-typing-indicator');
+        typingIndicator.style.display = 'block';
+
+        setTimeout(() => {
+          typingIndicator.style.display = 'none';
+          const respostaVendas = gerarRespostaMonicaVendas(mensagemUsuario, contextoViagemAtual);
+          adicionarBolhaMensagem('monica', respostaVendas);
+          historicoChatMonica.push({ role: 'assistant', content: respostaVendas });
+        }, 400);
+      }
+
+      // REGISTRO DE SERVICE WORKER PARA PWA PUSH NOTIFICATIONS
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js').then((reg) => {
+          console.log('Service Worker registrado com sucesso!', reg);
+        }).catch((err) => console.error('Erro ao registrar Service Worker:', err));
+      }
+
+      function requestPushPermission() {
+        if ('Notification' in window) {
+          Notification.requestPermission().then((permission) => {
+            if (permission === 'granted') {
+              alert('🔔 Notificações VIP ativadas no seu celular! Você receberá avisos assim que a Paula lançar um novo destino.');
+              document.getElementById('pwa-install-banner').style.display = 'none';
+            }
+          });
+        }
+      }
+
+      function consultarMonica(pacote) {
+        abrirChatMonica(pacote);
+      }
+
       function switchTab(tab) {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        if (tab === 'timeline') {
+        const tabNovas = document.getElementById('tab-novas');
+        const tabCad = document.getElementById('tab-cadastro');
+        const tabTime = document.getElementById('tab-timeline');
+        const tabGuia = document.getElementById('tab-guia');
+
+        if (tab === 'novas') {
           document.querySelectorAll('.tab-btn')[0].classList.add('active');
-          document.getElementById('tab-timeline').style.display = 'block';
-          document.getElementById('tab-guia').style.display = 'none';
-        } else {
+          tabNovas.style.display = 'block';
+          tabCad.style.display = 'none';
+          tabTime.style.display = 'none';
+          tabGuia.style.display = 'none';
+        } else if (tab === 'cadastro') {
           document.querySelectorAll('.tab-btn')[1].classList.add('active');
-          document.getElementById('tab-timeline').style.display = 'none';
-          document.getElementById('tab-guia').style.display = 'block';
+          tabNovas.style.display = 'none';
+          tabCad.style.display = 'block';
+          tabTime.style.display = 'none';
+          tabGuia.style.display = 'none';
+        } else if (tab === 'timeline') {
+          document.querySelectorAll('.tab-btn')[2].classList.add('active');
+          tabNovas.style.display = 'none';
+          tabCad.style.display = 'none';
+          tabTime.style.display = 'block';
+          tabGuia.style.display = 'none';
+        } else {
+          document.querySelectorAll('.tab-btn')[3].classList.add('active');
+          tabNovas.style.display = 'none';
+          tabCad.style.display = 'none';
+          tabTime.style.display = 'none';
+          tabGuia.style.display = 'block';
         }
       }
 
       function showPixModal() {
         alert('QR Code PIX Captur:\n\n00020126360014BR.GOV.BCB.PIX0114+558599999999952040000530398654041250.00\n\nCopia e Cola no seu aplicativo do banco!');
+      }
+
+      async function submitOnboarding(e) {
+        e.preventDefault();
+        const nome = document.getElementById('onb-nome').value;
+        const phone = document.getElementById('onb-phone').value;
+        const email = document.getElementById('onb-email').value;
+        const cpf = document.getElementById('onb-cpf').value;
+        const passaporte = document.getElementById('onb-passaporte').value;
+        const fileInput = document.getElementById('onb-file');
+
+        if (!fileInput.files[0]) {
+          alert('Selecione a foto do passaporte ou documento de identificação.');
+          return;
+        }
+
+        alert(`✅ Cadastro enviado com sucesso!\n\nSeus dados e documento foram enviados para a Fila de Aprovação da Paula.\nVocê receberá o aceite via WhatsApp (${phone})!`);
+        switchTab('timeline');
       }
 
       async function sendDocument() {

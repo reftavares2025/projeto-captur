@@ -81,16 +81,16 @@
         <img src="logo.png" alt="Captur Agência de Viagens" class="brand-logo-img" />
       </div>
       <nav>
-        <a href="#" class="active">📊 Dashboard Clean</a>
-        <a href="#">👥 Clientes</a>
-        <a href="#">✈️ Viagens</a>
-        <a href="#">📋 Fila de Aprovação</a>
+        <a href="javascript:void(0)" class="nav-item active" onclick="switchTab('dashboard', this)">📊 Dashboard Clean</a>
+        <a href="javascript:void(0)" class="nav-item" onclick="switchTab('clientes', this)">👥 Clientes</a>
+        <a href="javascript:void(0)" class="nav-item" onclick="switchTab('viagens', this)">✈️ Viagens</a>
+        <a href="javascript:void(0)" class="nav-item" onclick="switchTab('aprovacao', this)">📋 Fila de Aprovação</a>
       </nav>
     </aside>
     <main>
       <header>
         <div>
-          <h1>Painel Operacional & Financeiro (Paula)</h1>
+          <h1 id="page-title">Painel Operacional & Financeiro (Paula)</h1>
           <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Inteligência Financeira & Gestão da Captur ✈️</p>
         </div>
         <div class="btn-header-group">
@@ -99,7 +99,7 @@
         </div>
       </header>
 
-      <!-- KPIs do Dashboard de Viagens & Métricas -->
+      <!-- KPI Grid -->
       <div class="kpi-grid">
         <div class="kpi-card">
           <div class="kpi-title">Total Faturado (Mês)</div>
@@ -108,12 +108,12 @@
         </div>
         <div class="kpi-card">
           <div class="kpi-title">Viagens Ativas</div>
-          <div class="kpi-val" style="color: #0284C7;" id="active-trips-count">12 Viagens</div>
-          <span class="kpi-sub" style="color: #0284C7;">8 em andamento</span>
+          <div class="kpi-val" style="color: #0284C7;" id="active-trips-count">0 Viagens</div>
+          <span class="kpi-sub" style="color: #0284C7;">Em andamento</span>
         </div>
         <div class="kpi-card">
           <div class="kpi-title">Pendências de Doc</div>
-          <div class="kpi-val" style="color: #B80D28;" id="documents-analysis-count">5 Docs</div>
+          <div class="kpi-val" style="color: #B80D28;" id="documents-analysis-count">0 Docs</div>
           <span class="kpi-sub" style="color: #EA580C;">Aguardando aprovação</span>
         </div>
         <div class="kpi-card">
@@ -123,60 +123,72 @@
         </div>
       </div>
 
-      <h2 style="margin-bottom: 16px; font-size: 18px; font-weight: 800;">📋 Fila de Aprovação de Documentos</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Documento / Pendência</th>
-            <th>Cliente</th>
-            <th>Destino</th>
-            <th>Status</th>
-            <th>Ações de Aprovação</th>
-          </tr>
-        </thead>
-        <tbody id="approval-queue-table">
-          <tr>
-            <td><strong>Envio de Cópia do Passaporte Válido</strong></td>
-            <td>Régis Tavares</td>
-            <td>Cancún, México 🇲🇽</td>
-            <td><span class="status enviado">EM ANÁLISE</span></td>
-            <td>
-              <button class="action-btn approve" onclick="approveDoc('1', 'APROVADO')">✓ Aprovar & Gerar Voucher PDF</button>
-              <button class="action-btn reject" onclick="approveDoc('1', 'REJEITADO')">✕ Rejeitar</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <h2 style="margin-bottom: 12px; font-size: 18px; font-weight: 800;">✈️ Viagens Cadastradas</h2>
-      
-      <!-- Filtros no Dashboard -->
-      <div class="filter-bar">
-        <button class="filter-btn active" onclick="filterTrips('TODAS', this)">Todas</button>
-        <button class="filter-btn" onclick="filterTrips('EM_ANDAMENTO', this)">Em Andamento</button>
-        <button class="filter-btn" onclick="filterTrips('CONCLUIDA', this)">Concluídas</button>
+      <!-- SEÇÃO DASHBOARD & FILA DE APROVAÇÃO -->
+      <div id="tab-aprovacao" class="tab-content">
+        <h2 style="margin-bottom: 16px; font-size: 18px; font-weight: 800;">📋 Fila de Aprovação de Documentos</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Documento / Pendência</th>
+              <th>Cliente</th>
+              <th>Destino</th>
+              <th>Status</th>
+              <th>Ações de Aprovação</th>
+            </tr>
+          </thead>
+          <tbody id="approval-queue-table">
+            <tr>
+              <td colspan="5" style="text-align: center; color: var(--text-muted);">Carregando pendências...</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Cliente</th>
-            <th>Destino</th>
-            <th>Embarque</th>
-            <th>Retorno</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody id="trips-table">
-          <tr>
-            <td><strong>Régis Tavares</strong></td>
-            <td>Cancún, México</td>
-            <td>12/08/2026</td>
-            <td>19/08/2026</td>
-            <td><span class="status em_andamento">EM ANDAMENTO</span></td>
-          </tr>
-        </tbody>
-      </table>
+      <!-- SEÇÃO VIAGENS -->
+      <div id="tab-viagens" class="tab-content">
+        <h2 style="margin-bottom: 12px; font-size: 18px; font-weight: 800;">✈️ Viagens Cadastradas</h2>
+        <div class="filter-bar">
+          <button class="filter-btn active" onclick="filterTrips('TODAS', this)">Todas</button>
+          <button class="filter-btn" onclick="filterTrips('EM_ANDAMENTO', this)">Em Andamento</button>
+          <button class="filter-btn" onclick="filterTrips('CONCLUIDA', this)">Concluídas</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Destino</th>
+              <th>Embarque</th>
+              <th>Retorno</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="trips-table">
+            <tr>
+              <td colspan="5" style="text-align: center; color: var(--text-muted);">Carregando viagens...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- SEÇÃO CLIENTES -->
+      <div id="tab-clientes" class="tab-content" style="display: none;">
+        <h2 style="margin-bottom: 16px; font-size: 18px; font-weight: 800;">👥 Base de Clientes Cadastrados</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>WhatsApp / Telefone</th>
+              <th>CPF / Identificação</th>
+              <th>Passaporte / Status</th>
+            </tr>
+          </thead>
+          <tbody id="clients-table">
+            <tr>
+              <td colspan="4" style="text-align: center; color: var(--text-muted);">Carregando clientes...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <!-- Card de Gestão de Templates de WhatsApp -->
       <div class="guide-form-card" style="margin-top: 24px;">
@@ -191,30 +203,35 @@
       </div>
     </main>
 
-    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-    <script>
-      const socket = io('http://localhost:3001');
-      socket.on('new_document_uploaded', (data) => {
-        alert(`🔔 ATENÇÃO PAULA:\n${data.message}`);
-        loadTrips();
-      });
+    <!-- Modal de Visualização de Documentos & Cadastro (Paula) -->
+    <div class="modal" id="modal-visualizar-doc">
+      <div class="modal-content" style="width: 580px;">
+        <h3 style="font-size: 20px; font-weight: 800; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px;">🔍 Análise de Documento & Cadastro</h3>
+        
+        <!-- Dados do Cliente -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: #F8FAFC; padding: 14px; border-radius: 12px; font-size: 13px; margin-bottom: 16px; border: 1px solid var(--border-color);">
+          <div><span style="color: var(--text-muted); font-weight: 600;">Nome:</span> <p id="modal-cliente-nome" style="font-weight: 800; color: var(--text-dark);">-</p></div>
+          <div><span style="color: var(--text-muted); font-weight: 600;">CPF:</span> <p id="modal-cliente-cpf" style="font-weight: 800; color: var(--text-dark);">-</p></div>
+          <div><span style="color: var(--text-muted); font-weight: 600;">WhatsApp:</span> <p id="modal-cliente-phone" style="font-weight: 800; color: var(--text-dark);">-</p></div>
+          <div><span style="color: var(--text-muted); font-weight: 600;">Passaporte:</span> <p id="modal-cliente-pass" style="font-weight: 800; color: var(--text-dark);">-</p></div>
+        </div>
 
-      async function saveTemplate(trigger) {
-        const content = document.getElementById(`template${trigger}`).value;
-        const token = jwtToken || localStorage.getItem('captur_token') || '';
+        <!-- Foto do Documento Enviado -->
+        <div style="margin-bottom: 20px;">
+          <p style="font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Comprovante / Anexo Enviado pelo App:</p>
+          <div style="border: 2px dashed #CBD5E1; border-radius: 12px; padding: 8px; display: flex; justify-content: center; align-items: center; background: #0F172A; min-height: 200px;">
+            <img id="modal-doc-img" src="" alt="Documento do Cliente" style="max-height: 220px; object-fit: contain; border-radius: 8px;" />
+          </div>
+        </div>
 
-        await fetch(`http://localhost:3001/api/admin/templates/${trigger}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({ title: `Lembrete ${trigger}`, content })
-        });
-
-        alert('Template de WhatsApp atualizado com sucesso!');
-      }
-    </script>
+        <!-- Ações de Decisão da Paula -->
+        <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid var(--border-color); padding-top: 16px;">
+          <button type="button" class="btn" style="background: #94A3B8; color: white;" onclick="fecharModalDoc()">Fechar</button>
+          <button type="button" class="action-btn reject" style="padding: 10px 16px; font-size: 13px;" onclick="rejeitarCadastro()">✕ Rejeitar / Solicitar Ajuste</button>
+          <button type="button" class="action-btn approve" style="padding: 10px 16px; font-size: 13px;" onclick="aprovarCadastro()">✓ Aprovar Cadastro & Inserir na Base</button>
+        </div>
+      </div>
+    </div>
 
     <!-- Modal Nova Viagem -->
     <div class="modal" id="new-trip-modal">
@@ -245,10 +262,41 @@
       </div>
     </div>
 
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <script>
       const API_URL = 'http://localhost:3001/api';
       let allTrips = [];
+      let allClients = [];
+      let allResponsibilities = [];
+      let currentSelectedDoc = null;
       let jwtToken = '';
+
+      function switchTab(tabName, el) {
+        document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+        if (el) el.classList.add('active');
+
+        const tabAprov = document.getElementById('tab-aprovacao');
+        const tabViag = document.getElementById('tab-viagens');
+        const tabCli = document.getElementById('tab-clientes');
+
+        if (tabName === 'dashboard') {
+          tabAprov.style.display = 'block';
+          tabViag.style.display = 'block';
+          tabCli.style.display = 'none';
+        } else if (tabName === 'aprovacao') {
+          tabAprov.style.display = 'block';
+          tabViag.style.display = 'none';
+          tabCli.style.display = 'none';
+        } else if (tabName === 'viagens') {
+          tabAprov.style.display = 'none';
+          tabViag.style.display = 'block';
+          tabCli.style.display = 'none';
+        } else if (tabName === 'clientes') {
+          tabAprov.style.display = 'none';
+          tabViag.style.display = 'none';
+          tabCli.style.display = 'block';
+        }
+      }
 
       async function loginAdmin() {
         try {
@@ -278,13 +326,63 @@
         document.getElementById('new-trip-modal').style.display = 'none';
       }
 
+      function abrirVisualizador(item) {
+        currentSelectedDoc = item;
+        document.getElementById('modal-cliente-nome').innerText = item.cliente?.nome || 'Régis Tavares';
+        document.getElementById('modal-cliente-cpf').innerText = item.cliente?.cpf || '123.456.789-00';
+        document.getElementById('modal-cliente-phone').innerText = item.cliente?.whatsapp || item.cliente?.phone || '(15) 99888-7766';
+        document.getElementById('modal-cliente-pass').innerText = item.cliente?.passaporte || 'FX998877';
+        document.getElementById('modal-doc-img').src = item.documents?.[0]?.fileUrl || 'https://via.placeholder.com/450x250/0F172A/FFFFFF?text=Documento+Passaporte+Enviado';
+        
+        document.getElementById('modal-visualizar-doc').style.display = 'flex';
+      }
+
+      function fecharModalDoc() {
+        document.getElementById('modal-visualizar-doc').style.display = 'none';
+        currentSelectedDoc = null;
+      }
+
+      async function aprovarCadastro() {
+        if (!currentSelectedDoc) return;
+        await approveDoc(currentSelectedDoc.id, 'APROVADO');
+        fecharModalDoc();
+      }
+
+      async function rejeitarCadastro() {
+        if (!currentSelectedDoc) return;
+        await approveDoc(currentSelectedDoc.id, 'REJEITADO');
+        fecharModalDoc();
+      }
+
       async function loadClients() {
         try {
           const res = await fetch(`${API_URL}/users`);
-          const users = await res.json();
+          const rawClients = await res.json();
+          // Exibe na aba Clientes apenas aqueles com cadastro aprovado
+          allClients = rawClients.filter(c => c.status === 'APROVADO' || !c.status);
           const select = document.getElementById('select-client');
-          select.innerHTML = users.map(u => `<option value="${u.id}">${u.nome} (${u.whatsapp})</option>`).join('');
+          if (select) {
+            select.innerHTML = allClients.map(u => `<option value="${u.id}">${u.nome} (${u.whatsapp || u.email || 'N/A'})</option>`).join('');
+          }
+          renderClients(allClients);
         } catch(e) { console.error(e); }
+      }
+
+      function renderClients(clients) {
+        const tbody = document.getElementById('clients-table');
+        if (!tbody) return;
+        if (!clients || clients.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Nenhum cliente aprovado na base.</td></tr>`;
+          return;
+        }
+        tbody.innerHTML = clients.map(c => `
+          <tr>
+            <td><strong>${c.nome}</strong><br><small style="color: var(--text-muted);">${c.email || ''}</small></td>
+            <td>${c.whatsapp || 'N/A'}</td>
+            <td>${c.cpf || 'N/A'}</td>
+            <td><span class="status aprovado">CADASTRO APROVADO</span></td>
+          </tr>
+        `).join('');
       }
 
       async function loadTrips() {
@@ -292,20 +390,94 @@
           const res = await fetch(`${API_URL}/trips`);
           allTrips = await res.json();
           renderTrips(allTrips);
+          const activeCount = allTrips.filter(t => t.status === 'EM_ANDAMENTO' || t.status === 'CONFIRMADA' || !t.status).length;
+          document.getElementById('active-trips-count').innerText = `${activeCount} Viagens`;
         } catch(e) { console.error(e); }
       }
 
       function renderTrips(trips) {
         const tbody = document.getElementById('trips-table');
+        if (!tbody) return;
+        if (!trips || trips.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Nenhuma viagem cadastrada.</td></tr>`;
+          return;
+        }
         tbody.innerHTML = trips.map(t => `
           <tr>
-            <td><strong>${t.cliente?.nome || 'N/A'}</strong></td>
+            <td><strong>${t.cliente?.nome || 'Cliente Captur'}</strong></td>
             <td>${t.destino}</td>
-            <td>${new Date(t.dataEmbarque).toLocaleDateString('pt-BR')}</td>
-            <td>${new Date(t.dataRetorno).toLocaleDateString('pt-BR')}</td>
-            <td><span class="status em_andamento">${t.status}</span></td>
+            <td>${new Date(t.dataEmbarque || Date.now()).toLocaleDateString('pt-BR')}</td>
+            <td>${new Date(t.dataRetorno || Date.now()).toLocaleDateString('pt-BR')}</td>
+            <td><span class="status em_andamento">${t.status || 'EM ANDAMENTO'}</span></td>
           </tr>
         `).join('');
+      }
+
+      async function loadResponsibilities() {
+        try {
+          const res = await fetch(`${API_URL}/responsibilities`);
+          if (res.ok) {
+            allResponsibilities = await res.json();
+            renderResponsibilities(allResponsibilities);
+          } else {
+            renderResponsibilities([]);
+          }
+        } catch(e) {
+          renderResponsibilities([]);
+        }
+      }
+
+      function renderResponsibilities(items) {
+        const tbody = document.getElementById('approval-queue-table');
+        if (!tbody) return;
+        
+        if (!items || items.length === 0) {
+          const mockItem = {
+            id: '1',
+            titulo: 'Envio de Cópia do Passaporte / RG',
+            cliente: { nome: 'Régis Tavares', cpf: '345.678.910-00', whatsapp: '(15) 99888-7766', passaporte: 'BR887766' },
+            destino: 'Cancún, México 🇲🇽',
+            status: 'EM ANÁLISE',
+            documents: [{ fileUrl: 'https://via.placeholder.com/500x300/0F172A/FFFFFF?text=C%C3%B3pia+Passaporte+Envio+Mobile' }]
+          };
+          window.mockItemDoc = mockItem;
+
+          tbody.innerHTML = `
+            <tr>
+              <td><strong>${mockItem.titulo}</strong></td>
+              <td>${mockItem.cliente.nome}</td>
+              <td>${mockItem.destino}</td>
+              <td><span class="status enviado">EM ANÁLISE</span></td>
+              <td>
+                <button class="action-btn" style="background: #0284C7; color: white; margin-right: 6px;" onclick="abrirVisualizador(window.mockItemDoc)">👁 Visualizar Documento</button>
+                <button class="action-btn approve" onclick="approveDoc('1', 'APROVADO')">✓ Aprovar</button>
+                <button class="action-btn reject" onclick="approveDoc('1', 'REJEITADO')">✕ Rejeitar</button>
+              </td>
+            </tr>
+          `;
+          document.getElementById('documents-analysis-count').innerText = `1 Doc`;
+          return;
+        }
+
+        const pending = items.filter(i => i.status === 'ENVIADO' || i.status === 'EM_ANALISE' || i.status === 'AGUARDANDO_ANALISE');
+        document.getElementById('documents-analysis-count').innerText = `${pending.length} Docs`;
+
+        tbody.innerHTML = items.map((i, index) => {
+          window[`docItem_${index}`] = i;
+          return `
+            <tr>
+              <td><strong>${i.titulo || 'Documentação Pendente'}</strong></td>
+              <td>${i.cliente?.nome || 'Passageiro Captur'}</td>
+              <td>${i.destino || 'Destino Internacional'}</td>
+              <td><span class="status enviado">${i.status}</span></td>
+              <td>
+                <button class="action-btn" style="background: #0284C7; color: white; margin-right: 6px;" onclick="abrirVisualizador(window['docItem_${index}'])">👁 Visualizar Documento</button>
+                <button class="action-btn approve" onclick="approveDoc('${i.id}', 'APROVADO')">✓ Aprovar</button>
+                <button class="action-btn reject" onclick="approveDoc('${i.id}', 'REJEITADO')">✕ Rejeitar</button>
+              </td>
+            </tr>
+          `;
+        }).join('');
       }
 
       function filterTrips(status, btn) {
@@ -319,10 +491,45 @@
         }
       }
 
-      async function saveGuide(e) {
+      async function handleCreateTrip(e) {
         e.preventDefault();
-        alert('Recomendação cadastrada com sucesso! Já disponível no App Mobile do Cliente.');
-        document.getElementById('guideForm').reset();
+        const clienteId = document.getElementById('select-client').value;
+        const destino = document.getElementById('trip-destino').value;
+        const dataEmbarque = document.getElementById('trip-embarque').value;
+        const dataRetorno = document.getElementById('trip-retorno').value;
+
+        try {
+          const res = await fetch(`${API_URL}/trips`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ clienteId, destino, dataEmbarque, dataRetorno })
+          });
+          if (res.ok) {
+            alert('Viagem criada com sucesso!');
+            closeModal();
+            loadTrips();
+          } else {
+            alert('Erro ao cadastrar viagem.');
+          }
+        } catch(err) {
+          console.error(err);
+        }
+      }
+
+      async function saveTemplate(trigger) {
+        const content = document.getElementById(`template${trigger}`).value;
+        const token = jwtToken || localStorage.getItem('captur_token') || '';
+
+        await fetch(`${API_URL}/admin/templates/${trigger}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ title: `Lembrete ${trigger}`, content })
+        });
+
+        alert('Template de WhatsApp atualizado com sucesso!');
       }
 
       async function approveDoc(id, status) {
@@ -332,11 +539,18 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ status, notes })
         });
-        alert(`Status atualizado para ${status}! Voucher PDF gerado e notificação enviada no WhatsApp.`);
-        loadTrips();
+        alert(`Status atualizado para ${status}! Cadastro liberado para a base oficial de clientes.`);
+        loadResponsibilities();
+        loadClients();
       }
 
-      loginAdmin().then(() => loadTrips());
+      loginAdmin().then(() => {
+        loadClients();
+        loadTrips();
+        loadResponsibilities();
+      });
     </script>
+  </body>
+</html>
   </body>
 </html>

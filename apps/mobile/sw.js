@@ -26,3 +26,26 @@ self.addEventListener('fetch', (event) => {
     })
   );
 });
+
+// SERVICE WORKER PARA NOTIFICAÇÕES PUSH E FUNCIONAMENTO OFFLINE
+self.addEventListener('push', function(event) {
+  const data = event.data ? event.data.json() : {};
+  const title = data.title || "🔥 Nova Viagem Lançada na Captur!";
+  const options = {
+    body: data.body || "A Paula acabou de cadastrar um novo destino exclusivo! Confira antes que acabe.",
+    icon: "/logo.png",
+    badge: "/logo.png",
+    data: { url: data.url || "/" }
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(title, options)
+  );
+});
+
+self.addEventListener('notificationclick', function(event) {
+  event.notification.close();
+  event.waitUntil(
+    clients.openWindow(event.notification.data.url || "/")
+  );
+});
