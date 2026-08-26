@@ -5,3 +5,15 @@ uploads/
 .env
 dev.db
 dev.db-journal
+
+.vercel
+.env*
+!.env.example
+
+# Repositórios git independentes, vendorizados aqui como pastas locais — cada um tem
+# seu próprio remoto e histórico; a raiz não deve tentar engolir nenhum dos dois como
+# submódulo/gitlink quebrado (git avisa "adding embedded git repository" sem isto).
+#   - captur-agência-de-viagens/ -> github.com/reftavares2025/CAPTUR-AGENCIA-DE-VIAGENS
+#   - OpenWA/                    -> clone local do projeto open-source rmyndharis/OpenWA
+captur-agência-de-viagens/
+OpenWA/

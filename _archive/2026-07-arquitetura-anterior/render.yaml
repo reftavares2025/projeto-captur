@@ -8,9 +8,11 @@ services:
       - key: PORT
         value: 3001
       - key: JWT_SECRET
-        value: captur_jwt_super_secret_key_2026
+        sync: false # DEFINIR MANUALMENTE no dashboard do Render — nunca commitar segredos aqui.
       - key: GROQ_API_KEY
-        value: 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
+        sync: false # DEFINIR MANUALMENTE no dashboard do Render. A chave antiga hardcoded aqui
+        # foi removida por segurança em 26/08/2026 — se ainda for válida, revogue-a em
+        # console.groq.com/keys e gere uma nova, pois esteve em texto puro no repositório.
       - key: GROQ_MODEL
         value: llama-3.1-8b-instant
       - key: DATABASE_URL

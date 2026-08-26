@@ -5,8 +5,10 @@ import Groq from 'groq-sdk';
 const router = Router();
 const prisma = new PrismaClient();
 
+// Chave real hardcoded removida em 26/08/2026 por segurança — nunca commitar segredos.
+// Se essa chave ainda for válida, revogue-a em console.groq.com/keys e gere uma nova.
 const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY || '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'
+  apiKey: process.env.GROQ_API_KEY || ''
 });
 
 export async function getMonicaAIResponse(userMessage: string): Promise<string> {
