@@ -20,3 +20,5 @@ OpenWA/
 
 # Backups com contatos e conversas de clientes (dados pessoais)
 backups_*/
+__pycache__/
+*.pyc
