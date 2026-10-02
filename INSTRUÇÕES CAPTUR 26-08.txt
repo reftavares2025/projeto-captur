@@ -1,0 +1,380 @@
+===============================================================
+ CAPTUR AGÊNCIA DE VIAGENS — RESUMO DO TRABALHO (26/08/2026)
+===============================================================
+Este documento existe pra você (ou qualquer um que pegar o projeto depois)
+entender rápido o que foi feito hoje, onde parou, e por quê — sem precisar
+reler a conversa inteira com o Claude.
+
+
+---------------------------------------------------------------
+1. LINKS E ACESSOS IMPORTANTES
+---------------------------------------------------------------
+- App em produção (Vercel):  https://captur-agencia-de-viagens.vercel.app
+- Repositório do app:        https://github.com/reftavares2025/CAPTUR-AGENCIA-DE-VIAGENS
+- Repositório raiz (antigo): https://github.com/reftavares2025/projeto-captur
+- Painel Turso (banco):      https://app.turso.tech/reftavares2025
+- Painel Vercel:             https://vercel.com/reftavares-projects/captur-agencia-de-viagens
+- App local (rodando na sua máquina): http://localhost:4000
+  (NÃO use http://captur:4000 pra fazer login com Google — ver item 4)
+
+Todas as chaves/senhas reais estão em:
+  D:\PROJETO CAPTUR ITAPETININGA\captur-agência-de-viagens\.env.local
+(esse arquivo nunca vai pro GitHub — está no .gitignore de propósito)
+
+
+---------------------------------------------------------------
+2. O QUE FOI FEITO HOJE — FUNCIONANDO DE VERDADE
+---------------------------------------------------------------
+
+a) SEGURANÇA (o que mais importava, por causa de dado de cliente/cartão)
+   - Removida uma API key da Groq e um JWT_SECRET que estavam escritos em
+     texto puro no código antigo (render.yaml). Repositório é privado, mas
+     recomendo revogar essa chave da Groq em console.groq.com/keys.
+   - Removida a chave real do OpenWA que estava exposta dentro de um HTML
+     público (qualquer um que abrisse "ver código-fonte" via a chave).
+   - Os arquivos de dados reais (data-store/*.json — reservas, CPF,
+     telefone) PARARAM de ser gravados no Git. Antes disso, o snapshot
+     inicial do projeto tinha commitado esses arquivos por engano.
+   - Princípio fixado no código: NENHUM dado de cartão (número/validade/
+     CVV) passa ou é guardado neste sistema em lugar nenhum — pagamento
+     por cartão só pode ser feito via tokenização (Mercado Pago Payment
+     Brick), nunca por campo de formulário direto.
+
+b) BANCO DE DADOS
+   - Todas as reservas, viagens, contatos, logs de WhatsApp etc. migraram
+     de arquivos JSON soltos para um banco de verdade (SQLite via
+     @libsql/client).
+   - Local: usa o Turso na nuvem (compatível com SQLite, plano grátis) —
+     assim o app funciona tanto rodando na sua máquina quanto na Vercel,
+     lendo e escrevendo no MESMO banco.
+   - Os dados que já existiam (3 reservas reais/demo, contatos, etc.)
+     foram migrados pro Turso com sucesso — nada foi perdido.
+
+c) DEPLOY NO VERCEL (grátis)
+   - App está no ar em https://captur-agencia-de-viagens.vercel.app,
+     testado ao vivo: página inicial, lista de viagens, Concierge com IA
+     (Gemini) respondendo de verdade, tudo lendo do banco Turso.
+   - Variáveis de ambiente já configuradas lá: GEMINI_API_KEY,
+     GOOGLE_CLIENT_ID, TURSO_DATABASE_URL, TURSO_AUTH_TOKEN.
+
+d) GUIA DE DESTINOS COM LUGARES REAIS (fim dos dados fake)
+   - Antes: a lista de pontos turísticos/restaurantes/aluguel de carro era
+     100% fixa e só existia de verdade pra Cancún (qualquer outra viagem
+     caía nos mesmos dados de Cancún por um bug).
+   - Agora: busca em tempo real via OpenStreetMap (Nominatim + Overpass,
+     gratuitas, sem chave) — nome, endereço e telefone são reais. Testado
+     com Cancún (41 locais), Orlando (37) e Barreirinhas/Atins (16).
+   - Cache de 30 dias pra não sobrecarregar as APIs públicas.
+
+e) INSTAGRAM — parou de inventar promoção
+   - O botão de "sincronizar stories" antes pedia pra uma IA (Gemini)
+     INVENTAR promoções falsas e mostrava como se fossem reais. Isso foi
+     removido. Agora só sincroniza de verdade se você configurar a API
+     oficial do Meta (ver item 3-b abaixo); sem isso, avisa claramente
+     que não tem automação em vez de inventar dado.
+
+f) PAGAMENTO (Mercado Pago) — código pronto, falta credencial
+   - PIX automático por parcela já está implementado (cria cobrança real,
+     confirma sozinho quando o cliente paga via webhook do Mercado Pago).
+   - Fica DESLIGADO até você colocar as credenciais reais no .env.local —
+     até lá, continua no fluxo manual que já existia (cliente avisa que
+     pagou, staff confirma na mão).
+
+g) WHATSAPP (OpenWA)
+   - Sessão "captur-automacao" conectada e funcionando, webhook registrado
+     e testado (recebe mensagem → IA responde → envia de volta).
+   - Corrigido: rótulos na tela que ainda diziam "Evolution API" (o envio
+     real hoje é 100% via OpenWA).
+   - Corrigido: charset UTF-8 explícito no envio (possível causa de acento
+     quebrado em mensagens — não consegui confirmar 100% porque o envio de
+     teste real foi bloqueado pelo próprio Claude Code por segurança).
+   - Reforçado no prompt da IA: nunca escrever português sem acento.
+
+h) LOGIN COM GOOGLE
+   - Diagnosticado o "Erro 400": o Google só libera login sem HTTPS em
+     "localhost" — o endereço "captur:4000" (hosts file) NUNCA vai
+     funcionar pra login, só pra navegação normal.
+   - No domínio da Vercel (HTTPS de verdade) deve funcionar, DESDE QUE
+     você tenha adicionado "https://captur-agencia-de-viagens.vercel.app"
+     em "Authorized JavaScript origins" no Google Cloud Console
+     (console.cloud.google.com/apis/credentials). Você confirmou que já
+     salvou lá — se ainda der erro, o Google às vezes demora alguns
+     minutos pra propagar a mudança.
+
+i) ARQUITETURA ANTIGA
+   - apps/mobile, apps/web-admin e services/backend (versão de julho,
+     antes do app atual) foram movidos pra
+     _archive/2026-07-arquitetura-anterior/ dentro do repositório raiz.
+     Nada foi apagado. Os deploys antigos na Vercel (mobile, web-admin)
+     continuam no ar, independentes disso.
+
+
+---------------------------------------------------------------
+3. ONDE PAROU / O QUE FALTA (e por quê)
+---------------------------------------------------------------
+
+a) TROCAR O NÚMERO DO WHATSAPP
+   Parou porque é uma ação física — precisa de um chip/número dedicado
+   seu e escanear o QR Code com o celular. Combinado: você usa seu número
+   agora pra testar, depois troca pra um chip separado antes de produção
+   (nunca o número comercial principal, risco de banimento).
+
+b) INSTAGRAM AUTOMÁTICO DE VERDADE
+   Parou porque precisa de acesso à API oficial do Meta (Graph API/
+   Business Discovery), que exige criar um app em
+   developers.facebook.com e conectar a conta comercial do Instagram —
+   isso só você consegue fazer (login no Meta). Quando tiver o
+   IG_ACCESS_TOKEN e o IG_BUSINESS_ACCOUNT_ID, é só colocar no .env.local
+   que a sincronização automática liga sozinha.
+
+c) PAGAMENTO REAL COM MERCADO PAGO
+   Parou porque as credenciais (MERCADOPAGO_ACCESS_TOKEN) vêm da conta da
+   Paula. Assim que tiver, coloca no .env.local (local) e também nas
+   variáveis de ambiente do projeto na Vercel.
+
+d) WHATSAPP FUNCIONANDO NO VERCEL (não só localmente) — ✅ RESOLVIDO
+   (ver seção 5 abaixo pros detalhes e o aviso importante sobre a URL do
+   túnel mudar se o processo for reiniciado).
+
+e) TESTE REAL DE ENVIO DO WHATSAPP
+   O Claude Code bloqueou (por segurança) o envio de uma mensagem de teste
+   de verdade durante a sessão — é uma trava do próprio assistente pra
+   ações externas irreversíveis, não um problema do sistema. A sessão
+   está conectada e o webhook está ativo; só não foi testado ponta-a-ponta
+   com uma mensagem real enviada por mim.
+
+f) FERRAMENTA "wanman" — ✅ RESOLVIDO
+   Você já tinha o Visual Studio 2026 Community instalado (com o
+   componente C++ certo) — não precisou do winget. O problema real era
+   o node-gyp embutido no pnpm (v10.2.0) não reconhecer essa versão nova
+   do VS. Resolvido instalando node-gyp mais novo e o pnpm global.
+   `pnpm install` e `pnpm build` rodam limpos agora.
+
+g) CLAUDE-MEM E HEADROOM COMO FERRAMENTAS DO CLAUDE CODE
+   claude-mem: ✅ instalado como plugin, worker rodando (ativa na próxima
+   vez que você abrir o Claude Code).
+   headroom: ✅ instalado num ambiente Python ISOLADO (ver seção 5), pra
+   não repetir o incidente de conflito de pacotes do início do dia.
+
+
+---------------------------------------------------------------
+4. AVISOS QUE NÃO PODEM SER ESQUECIDOS
+---------------------------------------------------------------
+- NUNCA use http://captur:4000 pra fazer login com Google — só
+  http://localhost:4000 (local) ou o link da Vercel (produção).
+- NUNCA coloque número de cartão de cliente em nenhum formulário deste
+  sistema até o pagamento por cartão ser implementado via tokenização de
+  verdade (Mercado Pago Payment Brick) — não existe isso hoje no sistema,
+  de propósito.
+- Antes de ir pra produção com clientes reais, trocar o WhatsApp de teste
+  pelo número/chip dedicado definitivo.
+- O arquivo .env.local tem as chaves reais — nunca subir ele pro GitHub
+  (já está protegido no .gitignore, mas cuidado ao copiar a pasta pra
+  outro lugar).
+
+---------------------------------------------------------------
+5. ATUALIZAÇÃO (mais tarde no mesmo dia) — WHATSAPP NA VERCEL + HEADROOM ISOLADO
+---------------------------------------------------------------
+
+a) TÚNEL CLOUDFLARE (WhatsApp -> Vercel)
+   - Instalado cloudflared em D:\mcp-servers\external-tools\cloudflared\
+   - Como você ainda não tem domínio próprio cadastrado na Cloudflare
+     (o domínio do Vercel não serve pra isso — pertence à Vercel, não dá
+     pra "emprestar"), está rodando um TÚNEL RÁPIDO (sem conta, grátis):
+       https://invision-offline-last-mutual.trycloudflare.com
+   - ⚠️ AVISO IMPORTANTE: essa URL muda toda vez que o processo do
+     cloudflared for reiniciado (ou se você reiniciar o PC). Quando
+     isso acontecer, é preciso:
+       1. Pegar a nova URL no log do cloudflared
+       2. Atualizar a variável OPENWA_BASE_URL no projeto Vercel
+          (vercel env rm OPENWA_BASE_URL production, depois
+           vercel env add OPENWA_BASE_URL production com o valor novo)
+       3. vercel deploy --prod
+       4. Atualizar também o webhook do OpenWA (ver item c abaixo)
+     Quando você comprar um domínio próprio pro Captur, aí migramos pra
+     um túnel NOMEADO (URL fixa, não muda nunca mais).
+
+b) VARIÁVEIS ADICIONADAS NO PROJETO VERCEL (Production)
+   OPENWA_BASE_URL, OPENWA_API_KEY, OPENWA_SESSION_ID — nunca tinham
+   sido configuradas lá antes, por isso o envio/status do WhatsApp
+   nunca funcionou em produção (só localmente). Já testado: o endpoint
+   https://captur-agencia-de-viagens.vercel.app/api/whatsapp/session-status
+   responde com a sessão real (5519990154309, Régis Tavares).
+
+c) WEBHOOK DO OPENWA — trocado de local pra produção
+   O OpenWA tinha um webhook ativo (e sendo usado de verdade) apontando
+   só pro seu app local: http://host.docker.internal:4000/api/whatsapp/webhook
+   Trocado (a seu pedido) pra apontar pra produção:
+   https://captur-agencia-de-viagens.vercel.app/api/whatsapp/webhook
+   Isso significa que AGORA quem responde as mensagens recebidas é o
+   site publicado na Vercel, não mais o app rodando local na porta 4000.
+   Também liberei o domínio da Vercel na proteção SSRF do OpenWA
+   (arquivo D:\PROJETO CAPTUR ITAPETININGA\OpenWA\.env,
+   variável SSRF_ALLOWED_HOSTS) e precisei reiniciar o Docker Desktop
+   inteiro (bug de mount do WSL2, sem relação com o Captur) — os outros
+   containers (ERP, Postgres) subiram sozinhos de novo.
+
+d) AMBIENTE VIRTUAL ISOLADO PRO HEADROOM
+   Criado em: C:\Users\User\.venvs\headroom-ai
+   (Python 3.11, completamente separado do Python global desta máquina)
+   Instalado dentro dele: headroom-ai[proxy] (versão 0.36.5)
+   Confirmado que o Python GLOBAL continua com as versões antigas que
+   aider-chat/khoj/markitdown esperam (litellm 1.81.10, magika 0.5.1,
+   importlib-metadata 7.2.1) — o incidente do início do dia não se repete.
+   Registrado no Claude Code (escopo usuário, arquivo C:\Users\User\.claude.json)
+   como servidor MCP "headroom", usando o executável de dentro desse venv:
+     C:\Users\User\.venvs\headroom-ai\Scripts\headroom.exe mcp serve
+   Testado com "claude mcp list" -> aparece conectado. Só fica disponível
+   de verdade na próxima vez que você reabrir o Claude Code.
+
+---------------------------------------------------------------
+6. CLIENTES FAKE REMOVIDOS + CADASTRO MANUAL DE CLIENTES
+---------------------------------------------------------------
+
+a) O QUE MUDOU
+   Os 3 clientes fake que vinham de fábrica no sistema (Régis, Mariana,
+   Lucas — dados de demonstração) foram REMOVIDOS de vez:
+   - Do banco Turso de produção (reservas e logs de WhatsApp fake apagados).
+   - Do código-fonte (src/data/mockData.ts não semeia mais nada fake —
+     nem no primeiro boot de um banco novo).
+   Confirmado ao vivo: https://captur-agencia-de-viagens.vercel.app/api/bookings
+   e /api/clients retornam [] (vazio) agora.
+
+b) NOVO: CADASTRO DE CLIENTES (aba "Clientes" no Painel Admin)
+   Antes, um "cliente" só existia dentro de uma reserva — não dava pra
+   cadastrar alguém sem já ter uma viagem fechada. Agora existe uma
+   lista de clientes própria, independente de reserva: você cadastra,
+   edita e remove clientes na nova aba "Clientes" do painel
+   (nome, e-mail, telefone, CPF, nascimento, passaporte, cidade/UF,
+   observações).
+
+c) PRONTO PRA QUANDO A API DO SISTEMA DA CAPTUR CHEGAR
+   A tabela de clientes já nasce com os campos `source` ('manual' ou
+   'captur_api') e `external_id`. Quando você me mandar o acesso/contrato
+   da API do sistema da Captur, o trabalho será só escrever uma rotina
+   que sincroniza os clientes de lá pra cá (upsert por external_id, ou
+   por e-mail/CPF como reserva), sem precisar mexer em mais nada do
+   sistema — reservas continuam funcionando exatamente como já
+   funcionavam.
+
+d) ACHADO (não corrigido agora, fica registrado): rodar o app LOCAL
+   nesta máquina (npm run dev) hoje na verdade usa um SQLite local por
+   engano, e NÃO o banco Turso — um bug de ordem de carregamento do
+   dotenv (só afeta o modo local; a Vercel em produção sempre usou o
+   Turso corretamente, isso nunca foi um risco pros dados reais). Se
+   quiser que eu corrija isso depois, é uma mudança pequena e segura.
+
+---------------------------------------------------------------
+6. AUDITORIA DE SEGURANÇA + CORREÇÕES CRÍTICAS + APP PWA SEM RESERVA
+---------------------------------------------------------------
+
+a) ⚠️ AÇÃO SUA NECESSÁRIA — CONFIRME ISSO ANTES DE QUALQUER COISA
+   A partir de agora, pra alguém ser reconhecido como admin de verdade (Régis,
+   Paula, Mariana), precisa fazer login DE VERDADE com o Google usando um
+   e-mail que exista nesta lista: regisfrancatavares@gmail.com,
+   paula.diretoria@captur.tur.br, mariana.consultoria@captur.tur.br.
+   O botão "Perfis" (trocar de usuário sem senha) continua existindo na tela,
+   mas NÃO dá mais acesso real às funções de admin — é só visual agora.
+   PERGUNTA CRÍTICA: paula.diretoria@captur.tur.br e
+   mariana.consultoria@captur.tur.br são contas Google de verdade (Google
+   Workspace no domínio captur.tur.br) que a Paula e a Mariana conseguem
+   acessar? Se NÃO forem, elas ficam sem conseguir entrar no painel admin
+   depois desta correção. Se for o caso, me avise que eu ajudo a resolver
+   (ou trocar o e-mail cadastrado pro Gmail pessoal delas, por exemplo).
+
+b) AUDITORIA DE SEGURANÇA (20 itens que você pediu pra conferir)
+   Rodada uma auditoria completa. Achado mais grave: NENHUMA rota
+   administrativa verificava login no servidor — qualquer pessoa na internet,
+   sem sessão nenhuma, conseguia ver CPF/passaporte de todos os clientes,
+   criar/editar/apagar viagens, e até confirmar a própria parcela como paga
+   sem pagar nada. Resultado completo dos 20 itens está registrado na
+   conversa com o Claude desta sessão (peça pra reexibir se precisar).
+
+c) ✅ CORRIGIDO HOJE: autenticação real no servidor
+   - Login do Google agora gera uma sessão de verdade (cookie seguro,
+     assinado, só o servidor lê) — não é mais só "o navegador decide".
+   - Todas as rotas de admin (viagens, clientes, financeiro, WhatsApp,
+     Instagram, exportação de CSV) agora EXIGEM essa sessão de staff.
+   - Reservas: cada cliente só vê a própria reserva (antes, a rota
+     devolvia os dados de TODOS os clientes pra qualquer requisição).
+   - Testado e confirmado em produção.
+
+d) ✅ CORRIGIDO HOJE: chave do OpenWA vazada foi trocada
+   A chave antiga (que apareceu exposta num commit antigo do git, nunca
+   tinha sido trocada) foi REVOGADA de vez no gateway OpenWA — não funciona
+   mais pra nada, mesmo que alguém a encontre no histórico do git. Uma chave
+   nova, com permissão mais restrita (só essa sessão de WhatsApp, não admin),
+   está em uso agora. Também revoguei uma chave ADMIN que estava parada sem
+   uso nenhum, achada durante a limpeza.
+   (Você escolheu não reescrever o histórico do git por enquanto — só trocar
+   a chave — o que já neutraliza o vazamento. Se mudar de ideia depois, dá
+   pra limpar o histórico também.)
+
+e) ⏳ AINDA EM ABERTO (não corrigido hoje, fica registrado pra depois)
+   - CPF/passaporte/telefone gravados sem criptografia no banco.
+   - Alguns formulários aceitam campos que não deveriam (mass assignment).
+   - Sem limite de taxa (rate limit) nem proteção contra bots/CAPTCHA.
+   - Upload de documentos não confere tipo/tamanho do arquivo de verdade.
+   - Sem cabeçalhos de segurança (helmet) nem validação de formato
+     estruturada (schema) nos formulários.
+   - Sem verificação de assinatura nos webhooks do OpenWA e Mercado Pago
+     (são chamados por sistemas externos, não por login de usuário — é uma
+     proteção diferente, específica pra webhook).
+   - Sem scan automático de dependências (Dependabot/CI) — `npm audit`
+     manual está limpo hoje (0 vulnerabilidades), mas nada roda isso sozinho.
+
+f) ✅ NOVO: App do passageiro (PWA) funciona mesmo sem reserva
+   Como os clientes fake foram removidos, todo cliente novo agora começa sem
+   reserva nenhuma — antes disso mostrava só uma tela vazia. Agora, sem
+   reserva, o app mostra os pacotes reais cadastrados por você em "Pacotes &
+   Destinos", com descrição, preço real e "Lugares para Visitar" (dados reais
+   do OpenStreetMap). Ao clicar em "Tenho Interesse", abre um formulário
+   curto que manda a mensagem pro WhatsApp da CENTRAL da agência
+   (+55 15 3537-2640) — de propósito, NÃO usa o chip automático do OpenWA
+   (esse fica reservado só pros lembretes D-30/D-15/D-7 de quem já é
+   cliente). "Comprar Passagens" e FAQ também ficam acessíveis.
+
+---------------------------------------------------------------
+7. TODOS OS ITENS DE SEGURANÇA RESOLVIDOS (27/08/2026) + STAFF REDUZIDO
+---------------------------------------------------------------
+
+a) Só você (Régis) e a Paula são staff de verdade agora — removi o perfil
+   da Mariana do sistema (a pedido seu). Quando for incluir alguém, é só
+   avisar.
+
+b) Criptografia "absoluta" nos dados de cliente — ✅ feito
+   CPF, passaporte, telefone, e-mail, data de nascimento, cidade/UF e notas
+   de cliente agora são cifrados (AES-256-GCM) ANTES de qualquer gravação no
+   banco Turso — testado direto no banco em produção: o valor gravado é
+   ilegível sem a chave (DATA_ENCRYPTION_KEY, guardada só no .env.local e na
+   Vercel). A API continua devolvendo os dados normalmente pra quem tem
+   permissão — a cifra é só "em repouso" (no banco), não trava o uso do
+   sistema.
+   ⚠️ Essa chave é crítica: se for perdida, os dados gravados com ela não
+   voltam a ser legíveis. Guardada com o mesmo cuidado do SESSION_SECRET.
+
+c) Todos os outros itens em aberto da auditoria — ✅ feito
+   - Mass assignment: campos como id/código de reserva nunca mais vêm do
+     que o navegador manda, sempre gerados pelo servidor.
+   - Validação de formato: e-mail, CPF e telefone são validados antes de
+     salvar (erro claro se o formato estiver errado).
+   - Rate limiting: toda a API tem limite de chamadas; login e IA
+     (Concierge, busca de voos) têm limite mais apertado ainda.
+   - Proteção contra bots: reCAPTCHA v3 no login — funciona sem quebrar
+     nada até você criar as chaves em google.com/recaptcha/admin (aí é só
+     me mandar Site Key + Secret Key que eu ativo).
+   - Upload de documento: confere de verdade o tipo (JPEG/PNG/WEBP/PDF) e
+     tamanho (até 8MB) do arquivo antes de aceitar.
+   - Cabeçalhos de segurança: instalado (helmet + configuração espelhada
+     no vercel.json, porque a Vercel serve a página inicial direto do
+     cache, sem passar pelo servidor).
+   - Assinatura de webhook: o webhook do OpenWA (que já estava registrado)
+     agora tem uma chave secreta conferida a cada chamada — e o do Mercado
+     Pago já vem pronto pra quando a Paula mandar as credenciais.
+   - Scan de dependências: Dependabot (atualização semanal automática) +
+     checagem de segurança toda vez que o código muda, direto no GitHub.
+
+===============================================================
+Fim do resumo. Qualquer dúvida, é só reabrir esta conversa com o Claude
+ou mandar este arquivo pra outra sessão de continuação.
+===============================================================

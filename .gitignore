@@ -17,3 +17,6 @@ dev.db-journal
 #   - OpenWA/                    -> clone local do projeto open-source rmyndharis/OpenWA
 captur-agência-de-viagens/
 OpenWA/
+
+# Backups com contatos e conversas de clientes (dados pessoais)
+backups_*/
